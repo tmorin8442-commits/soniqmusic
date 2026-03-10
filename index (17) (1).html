@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SONIQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;
+  --surface:#111;
+  --border:#1e1e1e;
+  --green:#1DB954;
+  --green2:#169c45;
+  --text:#ececec;
+  --muted:#555;
+  --muted2:#333;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+
+
+/* layout */
+.page{max-width:680px;margin:0 auto;padding:0 24px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:32px 0 48px}
+.logo{font-family:'Instrument Serif',serif;font-size:1.6rem;font-style:italic;letter-spacing:-.01em}
+.logo span{color:var(--green)}
+
+/* auth button */
+.auth-btn{display:flex;align-items:center;gap:8px;padding:9px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.72rem;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+.auth-btn:hover{border-color:var(--green);color:var(--green)}
+.auth-btn.on{background:var(--green);border-color:var(--green);color:#000}
+.auth-btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* user chip */
+.user-chip{display:flex;align-items:center;gap:10px}
+.user-name{font-size:.75rem;color:var(--green)}
+
+/* hero */
+.hero{padding:0 0 64px}
+.hero-eyebrow{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(2.4rem,6vw,3.8rem);font-weight:400;line-height:1.08;letter-spacing:-.02em;margin-bottom:16px}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero p{font-size:.85rem;color:var(--muted);line-height:1.7;max-width:420px}
+
+/* divider */
+.divider{height:1px;background:var(--border);margin:0 0 40px}
+
+/* section label */
+.label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+
+/* discover section */
+.discover{margin-bottom:48px;display:flex;flex-direction:column;gap:32px}
+
+/* genres tags */
+.genre-tags{display:flex;flex-wrap:wrap;gap:8px}
+.gtag{padding:9px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.gtag:hover{border-color:var(--muted2);color:var(--text)}
+.gtag.on{border-color:var(--green);color:var(--green);background:rgba(29,185,84,.07)}
+
+/* text prompt */
+.prompt-wrap{position:relative}
+.prompt-wrap textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;color:var(--text);font-family:'Syne',sans-serif;font-size:.82rem;line-height:1.6;resize:none;outline:none;transition:border-color .2s;height:88px}
+.prompt-wrap textarea:focus{border-color:var(--green)}
+.prompt-wrap textarea::placeholder{color:var(--muted)}
+
+/* artist input */
+.artist-wrap{display:flex;gap:8px;flex-wrap:wrap}
+.artist-chip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(29,185,84,.08);border:1px solid rgba(29,185,84,.25);color:var(--green);font-family:'Syne',sans-serif;font-size:.72rem}
+.artist-chip button{background:none;border:none;color:var(--green);cursor:pointer;font-size:.9rem;line-height:1;opacity:.6;padding:0}
+.artist-chip button:hover{opacity:1}
+.artist-input-row{display:flex;gap:8px;width:100%}
+.artist-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:9px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:.78rem;outline:none;transition:border-color .2s;min-width:0}
+.artist-input:focus{border-color:var(--green)}
+.artist-input::placeholder{color:var(--muted)}
+.artist-add{padding:9px 18px;border-radius:100px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.72rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.artist-add:hover{border-color:var(--green);color:var(--green)}
+
+/* mood pills */
+.mood-section{margin-bottom:48px}
+.moods{display:flex;flex-wrap:wrap;gap:8px}
+.mood{padding:9px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.mood:hover{border-color:var(--muted2);color:var(--text)}
+.mood.on{border-color:var(--green);color:var(--green);background:rgba(29,185,84,.07)}
+
+/* era */
+.era-section{margin-bottom:48px}
+.eras{display:flex;gap:8px;flex-wrap:wrap}
+.era{padding:9px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s}
+.era:hover{border-color:var(--muted2);color:var(--text)}
+.era.on{border-color:#c8a96e;color:#c8a96e;background:rgba(200,169,110,.07)}
+
+/* generate */
+.gen-btn{width:100%;padding:18px;border-radius:14px;background:var(--green);border:none;color:#000;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.gen-btn:hover{background:var(--green2);transform:translateY(-1px)}
+.gen-btn:disabled{opacity:.5;transform:none}
+.gen-btn.loading{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* results */
+.results{display:none;padding:48px 0 80px}
+.results.show{display:block;animation:up .5s ease both}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.tracks{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
+.track{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:16px;padding:14px 16px;border-radius:10px;transition:background .15s;cursor:pointer}
+.track:hover{background:var(--surface)}
+.track-num{font-size:.72rem;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.track-info{}
+.track-name{font-size:.9rem;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-artist{font-size:.72rem;color:var(--muted)}
+.track-open{padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.65rem;cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap}
+.track-open:hover{border-color:var(--green);color:var(--green)}
+
+/* player embed */
+.player{border-radius:12px;overflow:hidden;margin-bottom:32px;background:var(--surface);min-height:80px;display:flex;align-items:center;justify-content:center}
+.player-placeholder{font-size:.75rem;color:var(--muted);text-align:center;padding:24px}
+
+/* save section */
+.save-area{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.save-text{font-size:.8rem;color:var(--muted);line-height:1.5}
+.save-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:.85rem}
+.save-btn{padding:11px 22px;border-radius:100px;background:var(--green);border:none;color:#000;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.save-btn:hover{background:var(--green2)}
+.save-btn.done{background:#1a3a24;color:var(--green);border:1px solid var(--green)}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal{background:#111;border:1px solid var(--border);border-radius:20px;padding:28px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Instrument Serif',serif;font-size:1.4rem;margin-bottom:4px}
+.modal-sub{font-size:.72rem;color:var(--muted);margin-bottom:24px}
+.modal-track{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
+.modal-track:last-of-type{border-bottom:none}
+.modal-track-info .modal-track-name{font-size:.85rem;color:var(--text)}
+.modal-track-info .modal-track-artist{font-size:.7rem;color:var(--muted);margin-top:2px}
+.modal-track a{padding:7px 14px;border-radius:100px;background:var(--green);color:#000;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0}
+.modal-close{margin-top:20px;width:100%;padding:13px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s}
+.modal-close:hover{border-color:var(--muted2);color:var(--text)}
+
+footer{padding:32px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted)}
+footer a{color:var(--green);text-decoration:none}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:2px}
+
+@media(max-width:500px){
+  .genre-row{grid-template-columns:80px 1fr 36px;gap:10px}
+  .save-area{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">son<span>iq</span></div>
+    <div id="authArea">
+      <button class="auth-btn" onclick="loginSpotify()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Connecter Spotify
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Générateur de playlist IA</div>
+    <h1>Ta musique,<br><em>exactement</em> comme tu la veux.</h1>
+    <p>Compose ton mix de genres, choisis ton humeur et ton époque. La playlist se crée en quelques secondes.</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- DISCOVER -->
+  <section class="discover">
+
+    <!-- 1. Genres -->
+    <div>
+      <div class="label" style="margin-bottom:14px">Genres</div>
+      <div class="genre-tags">
+        <button class="gtag on" onclick="toggleTag(this)">Pop</button>
+        <button class="gtag" onclick="toggleTag(this)">Rock</button>
+        <button class="gtag on" onclick="toggleTag(this)">Hip-Hop</button>
+        <button class="gtag" onclick="toggleTag(this)">Électro</button>
+        <button class="gtag" onclick="toggleTag(this)">Jazz</button>
+        <button class="gtag" onclick="toggleTag(this)">Classique</button>
+        <button class="gtag" onclick="toggleTag(this)">R&B</button>
+        <button class="gtag" onclick="toggleTag(this)">Indie</button>
+        <button class="gtag" onclick="toggleTag(this)">Metal</button>
+        <button class="gtag" onclick="toggleTag(this)">Soul</button>
+        <button class="gtag" onclick="toggleTag(this)">Lo-fi</button>
+        <button class="gtag" onclick="toggleTag(this)">Reggae</button>
+        <button class="gtag" onclick="toggleTag(this)">Folk</button>
+        <button class="gtag" onclick="toggleTag(this)">Ambient</button>
+        <button class="gtag" onclick="toggleTag(this)">Funk</button>
+      </div>
+    </div>
+
+    <!-- 2. Prompt -->
+    <div>
+      <div class="label" style="margin-bottom:14px">Décris ta musique idéale</div>
+      <div class="prompt-wrap">
+        <textarea id="promptTxt" placeholder="ex : musique pour travailler tard le soir, avec des basses profondes et une ambiance sombre..."></textarea>
+      </div>
+    </div>
+
+    <!-- 3. Artistes similaires -->
+    <div>
+      <div class="label" style="margin-bottom:14px">Artistes similaires</div>
+      <div class="artist-wrap" id="artistWrap">
+        <div class="artist-input-row">
+          <input class="artist-input" id="artistInput" placeholder="ex : Drake, Daft Punk..." onkeydown="if(event.key==='Enter')addArtist()">
+          <button class="artist-add" onclick="addArtist()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- MOOD -->
+  <section class="mood-section">
+    <div class="label">Ambiance</div>
+    <div class="moods">
+      <button class="mood on" onclick="toggleMood(this)">Mélancolique</button>
+      <button class="mood" onclick="toggleMood(this)">Énergique</button>
+      <button class="mood" onclick="toggleMood(this)">Relaxant</button>
+      <button class="mood" onclick="toggleMood(this)">Intense</button>
+      <button class="mood" onclick="toggleMood(this)">Joyeux</button>
+      <button class="mood" onclick="toggleMood(this)">Romantique</button>
+      <button class="mood" onclick="toggleMood(this)">Nostalgique</button>
+      <button class="mood" onclick="toggleMood(this)">Focus</button>
+    </div>
+  </section>
+
+  <!-- ERA -->
+  <section class="era-section">
+    <div class="label">Époque</div>
+    <div class="eras">
+      <button class="era" onclick="toggleEra(this)">Années 60</button>
+      <button class="era" onclick="toggleEra(this)">Années 70</button>
+      <button class="era" onclick="toggleEra(this)">Années 80</button>
+      <button class="era" onclick="toggleEra(this)">Années 90</button>
+      <button class="era" onclick="toggleEra(this)">Années 2000</button>
+      <button class="era on" onclick="toggleEra(this)">Récent</button>
+    </div>
+  </section>
+
+  <!-- GENERATE -->
+  <button class="gen-btn" id="genBtn" onclick="generate()">Générer la playlist</button>
+
+  <!-- RESULTS -->
+  <section class="results" id="results">
+    <div class="label" style="margin-bottom:20px">Playlist générée</div>
+
+    <div class="player" id="playerZone">
+      <div class="player-placeholder">Clique sur un titre pour l'écouter</div>
+    </div>
+
+    <div class="tracks" id="tracksList"></div>
+
+    <div class="save-area">
+      <div class="save-text">
+        <strong>Voir dans Spotify</strong>
+        Ouvre chaque titre directement dans l'app Spotify.
+      </div>
+      <button class="save-btn" id="saveBtn" onclick="showTracks()">Ouvrir les titres</button>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2025 soniq</span>
+    <span>Propulsé par <a href="https://developer.spotify.com" target="_blank">Spotify API</a></span>
+  </footer>
+
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+const CLIENT_ID = 'e8ef921c4c7741b3b8682634fd838b33';
+const REDIRECT_URI = 'https://soniqai22.netlify.app/';
+const SCOPES = 'user-read-private user-read-email playlist-modify-public playlist-modify-private streaming';
+
+let token = null;
+let user = null;
+let tracks = [];
+
+
+
+// ── TAGS / ARTISTS ────────────────────────────────────────
+function toggleTag(el) { el.classList.toggle('on'); }
+
+const artists = [];
+function addArtist() {
+  const input = document.getElementById('artistInput');
+  const val = input.value.trim();
+  if (!val) return;
+  artists.push(val);
+  input.value = '';
+  renderArtists();
+}
+function removeArtist(i) {
+  artists.splice(i, 1);
+  renderArtists();
+}
+function renderArtists() {
+  const wrap = document.getElementById('artistWrap');
+  wrap.innerHTML = '';
+  artists.forEach((a, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'artist-chip';
+    chip.innerHTML = `<span>${a}</span><button onclick="removeArtist(${i})">×</button>`;
+    wrap.appendChild(chip);
+  });
+  const row = document.createElement('div');
+  row.className = 'artist-input-row';
+  row.innerHTML = `<input class="artist-input" id="artistInput" placeholder="ex : Drake, Daft Punk..." onkeydown="if(event.key==='Enter')addArtist()"><button class="artist-add" onclick="addArtist()">+ Ajouter</button>`;
+  wrap.appendChild(row);
+}
+
+// ── MOOD / ERA ─────────────────────────────────────────────
+function toggleMood(el) {
+  document.querySelectorAll('.mood').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function toggleEra(el) {
+  document.querySelectorAll('.era').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── SPOTIFY AUTH PKCE ─────────────────────────────────────
+async function genVerifier() {
+  const arr = new Uint32Array(56); crypto.getRandomValues(arr);
+  return Array.from(arr, n => n.toString(36)).join('').slice(0, 128);
+}
+async function genChallenge(v) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+  return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+async function loginSpotify() {
+  const v = await genVerifier();
+  const c = await genChallenge(v);
+  sessionStorage.setItem('pkce', v);
+  const p = new URLSearchParams({ client_id: CLIENT_ID, response_type: 'code', redirect_uri: REDIRECT_URI, scope: SCOPES, code_challenge_method: 'S256', code_challenge: c, show_dialog: 'true' });
+  location.href = 'https://accounts.spotify.com/authorize?' + p;
+}
+
+async function exchangeCode(code) {
+  const v = sessionStorage.getItem('pkce');
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: CLIENT_ID, grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI, code_verifier: v })
+  });
+  const data = await res.json();
+  if (data.access_token) {
+    token = data.access_token;
+    sessionStorage.setItem('tok', token);
+    sessionStorage.removeItem('pkce');
+    history.replaceState({}, '', '/');
+    await loadUser();
+  }
+}
+
+async function loadUser() {
+  const res = await fetch('https://api.spotify.com/v1/me', { headers: { Authorization: 'Bearer ' + token } });
+  user = await res.json();
+  renderAuth();
+}
+
+function renderAuth() {
+  document.getElementById('authArea').innerHTML = `
+    <div class="user-chip">
+      <span class="user-name">✓ ${user.display_name || 'Connecté'}</span>
+      <button class="auth-btn" onclick="logout()" style="padding:6px 12px;font-size:.65rem;">Déconnecter</button>
+    </div>`;
+}
+
+function logout() { sessionStorage.clear(); location.reload(); }
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const code = new URLSearchParams(location.search).get('code');
+  if (code) { await exchangeCode(code); return; }
+  const t = sessionStorage.getItem('tok');
+  if (t) { token = t; await loadUser(); }
+});
+
+// ── GENERATE ──────────────────────────────────────────────
+async function generate() {
+  if (!token) {
+    sessionStorage.setItem('gen_after', '1');
+    loginSpotify();
+    return;
+  }
+
+  const btn = document.getElementById('genBtn');
+  btn.textContent = 'Recherche en cours...';
+  btn.disabled = true;
+
+  // Build search query from genres + prompt + artists + mood + era
+  const selectedGenres = [...document.querySelectorAll('.gtag.on')].map(g => g.textContent.toLowerCase()).slice(0,3);
+  const prompt = document.getElementById('promptTxt').value.trim();
+  const mood = document.querySelector('.mood.on')?.textContent || '';
+  const era = document.querySelector('.era.on')?.textContent || '';
+  const eraMap = { 'Années 60':'1960s', 'Années 70':'1970s', 'Années 80':'1980s', 'Années 90':'1990s', 'Années 2000':'2000s', 'Récent':'' };
+  const eraStr = eraMap[era] || '';
+  // Priorité : artistes > prompt > genres
+  let q = '';
+  if (artists.length) {
+    q = artists[0] + ' ' + selectedGenres.slice(0,1).join(' ');
+  } else if (prompt) {
+    q = prompt.slice(0, 80);
+  } else {
+    q = [selectedGenres.join(' '), mood, eraStr].filter(Boolean).join(' ');
+  }
+
+  try {
+    const res = await fetch('https://api.spotify.com/v1/search?' + new URLSearchParams({ q, type: 'track', limit: 10, market: 'FR' }), {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const data = await res.json();
+    tracks = (data.tracks?.items || []).filter(t => t && t.id);
+
+    if (!tracks.length) {
+      btn.textContent = 'Aucun résultat — Réessaie';
+      btn.disabled = false;
+      return;
+    }
+
+    const trackData = tracks.map(t => ({ id: t.id, uri: t.uri, name: t.name, artist: t.artists?.[0]?.name || '', img: t.album?.images?.[0]?.url || '' }));
+    sessionStorage.setItem('tracks', JSON.stringify(trackData));
+
+    renderResults();
+    btn.textContent = 'Regénérer';
+    btn.disabled = false;
+
+  } catch(e) {
+    btn.textContent = 'Erreur — Réessaie';
+    btn.disabled = false;
+  }
+}
+
+function renderResults() {
+  const section = document.getElementById('results');
+  const list = document.getElementById('tracksList');
+  list.innerHTML = '';
+
+  tracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'track';
+    row.innerHTML = `
+      <div class="track-num">${i + 1}</div>
+      <div class="track-info">
+        <div class="track-name">${t.name}</div>
+        <div class="track-artist">${t.artists?.[0]?.name || ''}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="track-open" onclick="embedTrack('${t.id}')">▶</button>
+        <a class="track-open" href="https://open.spotify.com/track/${t.id}" target="_blank">↗</a>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  section.classList.add('show');
+  setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function embedTrack(id) {
+  document.getElementById('playerZone').innerHTML =
+    `<iframe src="https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=0" width="100%" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px;display:block;"></iframe>`;
+}
+
+function showTracks() {
+  // Reload tracks from sessionStorage in case of page reload
+  const stored = sessionStorage.getItem('tracks');
+  let list = tracks;
+  if (stored && !list.length) {
+    try { list = JSON.parse(stored); } catch(e) {}
+  }
+
+  const cards = document.querySelectorAll('.track');
+  if (!cards.length) { alert('Génère d\'abord une playlist !'); return; }
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-title">Titres générés</div>
+      <div class="modal-sub">Clique sur un titre pour l'ouvrir dans Spotify</div>
+      <div id="modalList"></div>
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">Fermer</button>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const ml = modal.querySelector('#modalList');
+  cards.forEach((card, i) => {
+    const name = card.querySelector('.track-name')?.textContent || '';
+    const artist = card.querySelector('.track-artist')?.textContent || '';
+    const link = card.querySelector('a.track-open')?.href || '#';
+    const div = document.createElement('div');
+    div.className = 'modal-track';
+    div.innerHTML = `
+      <div class="modal-track-info">
+        <div class="modal-track-name">${name}</div>
+        <div class="modal-track-artist">${artist}</div>
+      </div>
+      <a href="${link}" target="_blank">Ouvrir</a>`;
+    ml.appendChild(div);
+  });
+
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '✓ Ouvert';
+  btn.classList.add('done');
+}
+
+// ── SAVE TO SPOTIFY ───────────────────────────────────────
+async function saveToSpotify() {
+  if (!token) { loginSpotify(); return; }
+
+  const cards = document.querySelectorAll('.track');
+  if (!cards.length) { alert('Génère d\'abord une playlist !'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '⠋ Création...'; btn.disabled = true;
+
+  try {
+    // 1. Créer la playlist
+    const plRes = await fetch('https://api.spotify.com/v1/me/playlists', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'SONIQ — ' + new Date().toLocaleDateString('fr'),
+        description: 'Générée par SONIQ',
+        public: false
+      })
+    });
+    const pl = await plRes.json();
+    if (!pl.id) throw new Error(pl.error?.message || 'Création impossible');
+
+    btn.textContent = '⠙ Ajout des titres...';
+
+    // 2. Récupérer les URIs
+    const stored = sessionStorage.getItem('tracks');
+    let uris = [];
+    if (stored) {
+      const t = JSON.parse(stored);
+      uris = t.map(x => x.uri).filter(u => u && u.startsWith('spotify:track:'));
+    }
+
+    if (!uris.length) throw new Error('URIs introuvables — régénère la playlist');
+
+    // 3. Ajouter les titres
+    const addRes = await fetch('https://api.spotify.com/v1/playlists/' + pl.id + '/tracks', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uris })
+    });
+    const addData = await addRes.json();
+
+    if (addData.snapshot_id) {
+      btn.textContent = '✓ Playlist sauvegardée !';
+      btn.style.background = '#1a3a24';
+      btn.style.border = '1px solid var(--green)';
+      btn.style.color = 'var(--green)';
+      btn.disabled = false;
+      // Ouvrir la playlist dans Spotify
+      const plUrl = 'https://open.spotify.com/playlist/' + pl.id;
+      setTimeout(() => window.open(plUrl, '_blank'), 500);
+    } else {
+      throw new Error(addData.error?.message || JSON.stringify(addData.error));
+    }
+
+  } catch(e) {
+    btn.textContent = '✗ ' + e.message;
+    btn.style.background = 'transparent';
+    btn.style.border = '1px solid #e05a5a';
+    btn.style.color = '#e05a5a';
+    btn.disabled = false;
+  }
+}
+
+// ── DOWNLOAD PLAYLIST ─────────────────────────────────────
+function downloadPlaylist() {
+  const cards = document.querySelectorAll('.track');
+  if (!cards.length) { alert('Génère d\'abord une playlist !'); return; }
+
+  let txt = 'SONIQ — Playlist générée le ' + new Date().toLocaleDateString('fr') + '\n';
+  txt += '='.repeat(40) + '\n\n';
+
+  cards.forEach((card, i) => {
+    const name = card.querySelector('.track-name')?.textContent || '';
+    const artist = card.querySelector('.track-artist')?.textContent || '';
+    const link = card.querySelector('a.track-open')?.href || '';
+    txt += (i+1) + '. ' + name + '\n';
+    txt += '   Artiste : ' + artist + '\n';
+    txt += '   Spotify : ' + link + '\n\n';
+  });
+
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'soniq-playlist-' + new Date().toISOString().slice(0,10) + '.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  const btn = document.getElementById('dlBtn');
+  btn.textContent = '✓ Téléchargé';
+  btn.style.borderColor = 'var(--green)';
+  btn.style.color = 'var(--green)';
+}
+
+// Auto-generate after login if flagged
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('gen_after') && token) {
+    sessionStorage.removeItem('gen_after');
+    setTimeout(generate, 500);
+  }
+});
+</script>
+</body>
+</html>
