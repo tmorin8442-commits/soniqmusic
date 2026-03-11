@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONIQ — Générateur de Musique</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #111;
+    --border: #222;
+    --accent: #b8ff57;
+    --accent2: #ff5757;
+    --text: #f0f0f0;
+    --muted: #555;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--accent);
+  }
+  .header-right { display: flex; gap: 12px; align-items: center; }
+  #spotifyBtn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  #spotifyBtn:hover { border-color: var(--accent); color: var(--accent); }
+  #spotifyBtn.connected { border-color: var(--accent); color: var(--accent); background: rgba(184,255,87,.08); }
+  #logoutBtn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    transition: all .2s;
+  }
+  #logoutBtn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 60px 40px; }
+  h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--accent); }
+  .sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 56px;
+  }
+
+  /* SECTIONS */
+  .section { margin-bottom: 44px; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* GENRES */
+  .genre-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .genre-tag {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    background: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+  }
+  .genre-tag:hover { border-color: var(--accent); }
+  .genre-tag.active { border-color: var(--accent); background: rgba(184,255,87,.12); color: var(--accent); }
+
+  /* AMBIANCE */
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .mood-btn {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+  }
+  .mood-btn .mood-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .mood-btn:hover { border-color: var(--accent); }
+  .mood-btn.active { border-color: var(--accent); background: rgba(184,255,87,.1); color: var(--accent); }
+
+  /* DESCRIPTION */
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 16px;
+    border-radius: 2px;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+
+  /* ARTIST INPUT */
+  input[type=text] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 14px 16px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input[type=text]:focus { border-color: var(--accent); }
+  input[type=text]::placeholder { color: var(--muted); }
+
+  /* GENERATE BTN */
+  #generateBtn {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 18px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: opacity .2s, transform .1s;
+    margin-top: 8px;
+  }
+  #generateBtn:hover { opacity: .9; transform: translateY(-1px); }
+  #generateBtn:active { transform: translateY(0); }
+  #generateBtn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  /* RESULTS */
+  #results { margin-top: 56px; display: none; }
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .results-title {
+    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+  #saveBtn {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .2s;
+  }
+  #saveBtn:hover { background: rgba(184,255,87,.12); }
+
+  .track-list { display: flex; flex-direction: column; gap: 2px; }
+  .track-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color .15s;
+  }
+  .track-item:hover { border-color: #333; }
+  .track-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .track-info { flex: 1; min-width: 0; }
+  .track-name {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-artist {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .track-open {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .track-open:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* LOADING */
+  .loading {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 40px 0;
+    text-align: center;
+    display: none;
+  }
+  .loading::after {
+    content: '';
+    animation: dots 1.2s infinite;
+  }
+  @keyframes dots {
+    0%,20% { content: '.'; }
+    40%,60% { content: '..'; }
+    80%,100% { content: '...'; }
+  }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: all .3s;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.ok { border-color: var(--accent); color: var(--accent); }
+  #toast.err { border-color: var(--accent2); color: var(--accent2); }
+
+  @media(max-width:600px) {
+    header { padding: 16px 20px; }
+    main { padding: 40px 20px; }
+    .mood-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SONIQ</div>
+  <div class="header-right">
+    <button id="spotifyBtn" onclick="connectSpotify()">Connecter Spotify</button>
+    <button id="logoutBtn" onclick="fullLogout()">Déconnecter</button>
+  </div>
+</header>
+
+<main>
+  <h1>Génère ta<br><span>playlist.</span></h1>
+  <p class="sub">// connecté à Spotify · recherche en temps réel</p>
+
+  <!-- GENRES -->
+  <div class="section">
+    <div class="section-label">Genres</div>
+    <div class="genre-grid" id="genreGrid">
+      <button class="genre-tag" onclick="toggleGenre(this,'pop')">Pop</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'hip-hop')">Hip-Hop</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'rock')">Rock</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'electronic')">Electronic</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'jazz')">Jazz</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'r&b')">R&B</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'lo-fi')">Lo-Fi</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'metal')">Metal</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'classical')">Classique</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'reggae')">Reggae</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'country')">Country</button>
+      <button class="genre-tag" onclick="toggleGenre(this,'latin')">Latin</button>
+    </div>
+  </div>
+
+  <!-- AMBIANCE -->
+  <div class="section">
+    <div class="section-label">Ambiance</div>
+    <div class="mood-grid">
+      <button class="mood-btn" onclick="selectMood(this,'chill')"><span class="mood-icon">🌙</span>Chill</button>
+      <button class="mood-btn" onclick="selectMood(this,'energique')"><span class="mood-icon">⚡</span>Énergique</button>
+      <button class="mood-btn" onclick="selectMood(this,'mélancolique')"><span class="mood-icon">🌧</span>Mélancolique</button>
+      <button class="mood-btn" onclick="selectMood(this,'focus')"><span class="mood-icon">🎯</span>Focus</button>
+      <button class="mood-btn" onclick="selectMood(this,'festif')"><span class="mood-icon">🎉</span>Festif</button>
+      <button class="mood-btn" onclick="selectMood(this,'romantique')"><span class="mood-icon">🌹</span>Romantique</button>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div class="section">
+    <div class="section-label">Décris ta musique</div>
+    <textarea id="descInput" placeholder="Ex: musique pour travailler tard le soir, basses profondes et synthés..."></textarea>
+  </div>
+
+  <!-- ARTISTE -->
+  <div class="section">
+    <div class="section-label">Artiste similaire (optionnel)</div>
+    <input type="text" id="artistInput" placeholder="Ex: Drake, Daft Punk, Adele...">
+  </div>
+
+  <button id="generateBtn" onclick="doGenerate()">GÉNÉRER LA PLAYLIST</button>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="results-header">
+      <div class="results-title" id="resultsTitle">// 0 titres trouvés</div>
+      <button id="saveBtn" onclick="openTracksModal()">↓ Voir dans Spotify</button>
+    </div>
+    <div class="loading" id="loadingEl">Recherche en cours</div>
+    <div class="track-list" id="trackList"></div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+const CLIENT_ID = 'e8ef921c4c7741b3b8682634fd838b33';
+const REDIRECT_URI = 'https://soniqmusic.online/';
+const SCOPES = 'playlist-modify-public playlist-modify-private user-read-private';
+
+// ===== STATE =====
+let accessToken = null;
+let selectedGenres = [];
+let selectedMood = '';
+let currentTracks = [];
+
+// ===== AUTH PKCE =====
+async function genVerifier() {
+  const arr = new Uint32Array(56); crypto.getRandomValues(arr);
+  return Array.from(arr, n => n.toString(36)).join('').slice(0, 128);
+}
+async function genChallenge(v) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+  return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+async function connectSpotify() {
+  const v = await genVerifier();
+  const c = await genChallenge(v);
+  sessionStorage.setItem('pkce', v);
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID, response_type: 'code',
+    redirect_uri: REDIRECT_URI, scope: SCOPES,
+    code_challenge_method: 'S256', code_challenge: c,
+    show_dialog: 'true'
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+}
+
+async function handleCallback() {
+  const code = new URLSearchParams(location.search).get('code');
+  if (!code) return;
+  const v = sessionStorage.getItem('pkce');
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: CLIENT_ID, grant_type: 'authorization_code',
+      code, redirect_uri: REDIRECT_URI, code_verifier: v
+    })
+  });
+  const data = await res.json();
+  if (data.access_token) {
+    accessToken = data.access_token;
+    sessionStorage.setItem('spotify_token', accessToken);
+    sessionStorage.removeItem('pkce');
+    history.replaceState({}, '', '/');
+    updateAuthUI(true);
+    toast('Spotify connecté ✓', 'ok');
+    const pending = sessionStorage.getItem('pending_generate');
+    if (pending === '1') {
+      sessionStorage.removeItem('pending_generate');
+      setTimeout(doGenerate, 500);
+    }
+  }
+}
+
+function loadToken() {
+  const t = sessionStorage.getItem('spotify_token');
+  if (t) { accessToken = t; updateAuthUI(true); }
+  handleCallback();
+}
+
+function updateAuthUI(connected) {
+  const btn = document.getElementById('spotifyBtn');
+  const out = document.getElementById('logoutBtn');
+  if (connected) {
+    btn.textContent = '✓ Connecté';
+    btn.classList.add('connected');
+    btn.onclick = null;
+    out.style.display = 'block';
+  } else {
+    btn.textContent = 'Connecter Spotify';
+    btn.classList.remove('connected');
+    btn.onclick = connectSpotify;
+    out.style.display = 'none';
+  }
+}
+
+function fullLogout() {
+  accessToken = null;
+  sessionStorage.clear();
+  updateAuthUI(false);
+  toast('Déconnecté', '');
+}
+
+// ===== CONTROLS =====
+function toggleGenre(el, genre) {
+  el.classList.toggle('active');
+  if (selectedGenres.includes(genre)) {
+    selectedGenres = selectedGenres.filter(g => g !== genre);
+  } else {
+    selectedGenres.push(genre);
+  }
+}
+
+function selectMood(el, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedMood = mood;
+}
+
+// ===== GENERATE =====
+async function doGenerate() {
+  if (!accessToken) {
+    sessionStorage.setItem('pending_generate', '1');
+    connectSpotify();
+    return;
+  }
+
+  const artist = document.getElementById('artistInput').value.trim();
+  const desc = document.getElementById('descInput').value.trim();
+
+  if (!artist && selectedGenres.length === 0 && !desc && !selectedMood) {
+    toast('Choisis un genre ou une ambiance', 'err');
+    return;
+  }
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('loadingEl').style.display = 'block';
+  document.getElementById('trackList').innerHTML = '';
+  document.getElementById('generateBtn').disabled = true;
+
+  let query = '';
+  if (artist) query = artist;
+  else if (desc) query = desc.split(' ').slice(0, 3).join(' ');
+  else if (selectedGenres.length) query = 'genre:' + selectedGenres[0];
+  else query = selectedMood;
+
+  if (selectedGenres.length && artist) query += ' genre:' + selectedGenres[0];
+
+  try {
+    const r = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10&market=CA`, {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+
+    if (r.status === 401) {
+      fullLogout();
+      toast('Session expirée, reconnecte-toi', 'err');
+      return;
+    }
+
+    const data = await r.json();
+    const tracks = data.tracks?.items || [];
+
+    currentTracks = tracks;
+    sessionStorage.setItem('current_tracks', JSON.stringify(tracks));
+
+    renderTracks(tracks);
+    document.getElementById('resultsTitle').textContent = `// ${tracks.length} titres trouvés`;
+  } catch (e) {
+    toast('Erreur de connexion', 'err');
+  } finally {
+    document.getElementById('loadingEl').style.display = 'none';
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+function renderTracks(tracks) {
+  const list = document.getElementById('trackList');
+  list.innerHTML = '';
+  if (!tracks.length) {
+    list.innerHTML = '<div style="padding:24px;color:var(--muted);font-family:Space Mono,monospace;font-size:13px;">Aucun résultat trouvé.</div>';
+    return;
+  }
+  tracks.forEach((t, i) => {
+    const item = document.createElement('div');
+    item.className = 'track-item';
+    item.innerHTML = `
+      <div class="track-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="track-info">
+        <div class="track-name">${t.name}</div>
+        <div class="track-artist">${t.artists.map(a=>a.name).join(', ')}</div>
+      </div>
+      <a class="track-open" href="${t.external_urls.spotify}" target="_blank">↗ Ouvrir</a>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function openTracksModal() {
+  const tracks = currentTracks.length ? currentTracks : JSON.parse(sessionStorage.getItem('current_tracks') || '[]');
+  if (!tracks.length) { toast('Génère d\'abord une playlist', 'err'); return; }
+
+  // Open each track in Spotify
+  tracks.forEach((t, i) => {
+    setTimeout(() => {
+      window.open(t.external_urls.spotify, '_blank');
+    }, i * 200);
+  });
+
+  toast(`${tracks.length} titres ouverts dans Spotify`, 'ok');
+}
+
+// ===== TOAST =====
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + (type || '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = '', 3000);
+}
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  loadToken();
+  const saved = sessionStorage.getItem('current_tracks');
+  if (saved) {
+    const tracks = JSON.parse(saved);
+    currentTracks = tracks;
+    if (tracks.length) {
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('resultsTitle').textContent = `// ${tracks.length} titres trouvés`;
+      renderTracks(tracks);
+    }
+  }
+});
+</script>
+</body>
+</html>
